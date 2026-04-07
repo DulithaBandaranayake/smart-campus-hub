@@ -1,0 +1,42 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px; /* Sidebar width */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.03) 0%, transparent 40%),
+              radial-gradient(circle at 0% 100%, rgba(6, 95, 70, 0.03) 0%, transparent 40%);
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    margin-left: 0;
+    padding-top: 60px; /* Space for mobile header if added */
+  }
+}
+
+/* Page Transition Wrapper */
+.page-transition {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}

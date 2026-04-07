@@ -1,0 +1,10 @@
+{
+  "name": "smart-campus-hub",
+  "version": "1.0.0",
+  "description": "Smart Campus Hub Root",
+  "scripts": {
+    "start": "powershell -ExecutionPolicy Bypass -File ./run_project.ps1",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && ./mvnw spring-boot:run"
+  }
+}
