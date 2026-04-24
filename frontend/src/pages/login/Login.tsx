@@ -32,7 +32,10 @@ const Login = () => {
             id: user.id.toString(),
             name: user.name,
             email: user.email,
-            role: user.role
+            role: user.role,
+            studentId: user.studentId,
+            parentId: user.parentId,
+            lecturerId: user.lecturerId
           }, token);
           toast('success', 'Access Granted', `Welcome back, ${user.name}`);
           navigate('/');

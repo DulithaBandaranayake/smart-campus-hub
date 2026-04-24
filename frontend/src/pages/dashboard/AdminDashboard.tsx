@@ -436,7 +436,7 @@ const AdminDashboard = () => {
                     <label>Assign Lecturer</label>
                     <select value={subjectForm.lecturerId} onChange={e => setSubjectForm({ ...subjectForm, lecturerId: e.target.value })}>
                       <option value="">Unassigned</option>
-                      {lecturers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                      {lecturers.map(l => <option key={l.id} value={l.lecturerId}>{l.name}</option>)}
                     </select>
                   </div>
                   <div className="form-field full">

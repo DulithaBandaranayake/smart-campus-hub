@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Trash2, Edit, X, Shield, Save } from 'lucide-react';
-import { userService } from '../../services/api';
+import { userService, subjectService } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { useUser } from '../../context/UserContext';
 import '../dashboard/Dashboard.css';
@@ -9,6 +9,7 @@ import '../dashboard/StudentDashboard.css';
 
 const Lecturers = () => {
   const [lecturers, setLecturers] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editUser, setEditUser] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,10 +22,14 @@ const Lecturers = () => {
 
   const fetchAll = async () => {
     try {
-      const res = await userService.getAll('LECTURER');
-      setLecturers(res.data);
+      const [lectRes, subjRes] = await Promise.all([
+        userService.getAll('LECTURER'),
+        subjectService.getAll()
+      ]);
+      setLecturers(lectRes.data);
+      setSubjects(subjRes.data);
     } catch {
-      toast('error', 'Error', 'Could not load lecturers');
+      toast('error', 'Error', 'Could not load data');
     }
   };
 
@@ -87,7 +92,7 @@ const Lecturers = () => {
       <div className="bento-card-v2" style={{ marginTop: '1.5rem' }}>
         <table className="marks-table">
           <thead>
-            <tr><th>#</th><th>Name</th><th>Email</th><th>Department</th><th>Employee ID</th>{isAdmin && <th>Actions</th>}</tr>
+            <tr><th>#</th><th>Name</th><th>Email</th><th>Department</th><th>Subjects</th>{isAdmin && <th>Actions</th>}</tr>
           </thead>
           <tbody>
             {lecturers.length === 0 ? (
@@ -98,7 +103,11 @@ const Lecturers = () => {
                 <td><strong>{l.name}</strong></td>
                 <td className="text-muted">{l.email}</td>
                 <td>{l.department ? <span className="grade-badge" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366F1', borderColor: 'rgba(99,102,241,0.2)' }}>{l.department}</span> : '—'}</td>
-                <td className="text-muted">{l.employeeId || '—'}</td>
+                <td>
+                  <span className="grade-badge" style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981', borderColor: 'rgba(16,185,129,0.2)' }}>
+                    {subjects.filter(s => s.lecturerId === l.lecturerId).length} Subjects
+                  </span>
+                </td>
                 {isAdmin && (
                   <td>
                     <div style={{ display: 'flex', gap: '6px' }}>

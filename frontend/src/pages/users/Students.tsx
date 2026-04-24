@@ -123,7 +123,7 @@ const Students = () => {
             {students.length === 0 ? (
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No students enrolled yet</td></tr>
             ) : students.map(s => {
-              const linkedParent = parents.find(p => p.id === s.parentId);
+              const linkedParent = parents.find(p => p.parentId === s.parentId);
               return (
                 <tr key={s.id}>
                   <td className="text-muted">#{s.id}</td>
@@ -186,7 +186,7 @@ const Students = () => {
                     <select value={formData.parentId} onChange={e => setFormData({ ...formData, parentId: e.target.value })}>
                       <option value="">— No parent linked —</option>
                       {parents.map(p => (
-                        <option key={p.id} value={p.id}>{p.name} ({p.email})</option>
+                        <option key={p.id} value={p.parentId}>{p.name} ({p.email})</option>
                       ))}
                     </select>
                     <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '4px' }}>

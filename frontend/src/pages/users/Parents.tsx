@@ -102,7 +102,7 @@ const Parents = () => {
             {parents.length === 0 ? (
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No parents registered</td></tr>
             ) : parents.map(p => {
-              const children = students.filter(s => s.parentId === p.id);
+              const children = students.filter(s => s.parentId === p.parentId);
               return (
                 <tr key={p.id}>
                   <td className="text-muted">#{p.id}</td>
@@ -172,7 +172,7 @@ const Parents = () => {
                       }}
                     >
                       {students.map(s => (
-                        <option key={s.id} value={s.id}>{s.name} ({s.grade || 'No Grade'})</option>
+                        <option key={s.id} value={s.studentId}>{s.name} ({s.grade || 'No Grade'})</option>
                       ))}
                     </select>
                     <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '4px' }}>
