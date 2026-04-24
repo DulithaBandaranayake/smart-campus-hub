@@ -4,7 +4,8 @@ A premium, full-stack Student Management System (SMS) built for modern education
 
 ## 📋 Table of Contents
 - [Technology Stack](#technology-stack)
-- [Quick Start](#quick-start)
+- [Technology Stack](#technology-stack)
+- [Installation & Setup](#-installation--setup)
 - [System Architecture](#system-architecture)
 - [Key Features](#key-features)
 - [Database & Persistence](#database--persistence)
@@ -20,20 +21,44 @@ A premium, full-stack Student Management System (SMS) built for modern education
 | **Database** | MySQL 8.0 (Persistent H2 for dev/demo) |
 | **Security** | JWT (JSON Web Tokens) & Spring Security |
 
-## 🚀 Quick Start
+## 🚀 Installation & Setup
+
+Follow these steps to get the project up and running on your local machine.
 
 ### 1. Prerequisites
-- **Java 17+** (Verified on Java 17 and 21)
-- **Node.js 18+**
+Before you begin, ensure you have the following installed:
+- **Java Development Kit (JDK) 17 or higher** ([Download JDK](https://www.oracle.com/java/technologies/downloads/))
+- **Node.js 18 or higher** ([Download Node.js](https://nodejs.org/))
+- **Git** ([Download Git](https://git-scm.com/downloads))
 
-### 2. Launching the App
-From the **root directory** (`smart-campus-hub`), simply run:
+### 2. Clone the Repository
+```bash
+git clone https://github.com/your-username/smart-campus-hub.git
+cd smart-campus-hub
+```
+
+### 3. Install Dependencies
+From the root directory, run the following command to install both backend and frontend dependencies:
+```bash
+npm run install:all
+```
+
+### 4. Environment Configuration
+The project uses an `.env` file for environment variables. A template is provided in `.env.example`.
+```bash
+cp .env.example .env
+```
+*(On Windows PowerShell: `copy .env.example .env`)*
+
+### 5. Launch the Application
+Run the following command to start both the Spring Boot backend and the React frontend concurrently:
 ```bash
 npm run dev
 ```
-- **Backend:** Starts on [http://localhost:8082](http://localhost:8082)
-- **Frontend:** Starts on [http://localhost:5173](http://localhost:5173)
-- **API Docs:** Access Swagger/OpenAPI at [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html)
+
+- **Backend:** [http://localhost:8082](http://localhost:8082)
+- **Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Interactive API Docs (Swagger):** [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html)
 
 ## 🏗️ System Architecture
 
@@ -73,4 +98,3 @@ To prevent demo data from being recreated on every run, the `AdminDatabaseSeeder
 | **Parent** | Akila Nexus | akila@nexus.com | password123 |
 
 ---
-*Developed for Smart Campus Operations Hub - A Premium Educational Solution.*
