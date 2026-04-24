@@ -34,7 +34,7 @@ const Login = () => {
             email: user.email,
             role: user.role
           }, token);
-          toast('success', 'Access Granted', `Welcome back, Operative ${user.name}`);
+          toast('success', 'Access Granted', `Welcome back, ${user.name}`);
           navigate('/');
         }
       } else {
@@ -54,6 +54,7 @@ const Login = () => {
         }
       }
     } catch (err: any) {
+      console.error('Login Error:', err);
       const errorMsg = err.response?.data?.message || 'Authentication or Connection failure.';
       toast('error', 'Auth Failure', errorMsg);
     } finally {
@@ -78,8 +79,8 @@ const Login = () => {
           >
             <Shield size={40} className="text-primary" />
           </motion.div>
-          <h1>Nexus <span>Ops</span></h1>
-          <p>Enterprise Campus Intelligence Hub</p>
+          <h1>Smart Campus <span>Hub</span></h1>
+          <p>Enterprise Student Management System</p>
         </div>
 
         <div className="auth-toggle">
@@ -160,7 +161,7 @@ const Login = () => {
         </form>
 
         <div className="login-footer">
-          <p>© 2026 Nexus Ops Command Center • V2.0 Enterprise</p>
+          <p>© 2026 Smart Campus Hub • V2.0 Enterprise</p>
         </div>
       </motion.div>
     </div>

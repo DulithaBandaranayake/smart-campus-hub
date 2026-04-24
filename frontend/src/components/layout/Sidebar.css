@@ -1,4 +1,4 @@
-.sidebar {
+.sidebar-container {
   width: 280px;
   height: 100vh;
   display: flex;
@@ -7,8 +7,10 @@
   background: var(--bg-card);
   backdrop-filter: var(--glass-blur);
   border-right: 1px solid #E2E8F0;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  bottom: 0;
   z-index: 50;
   transition: var(--transition);
 }

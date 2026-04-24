@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/resources")
-@CrossOrigin(origins = "http://localhost:5173") // Assuming frontend runs on Vite's default port
 public class ResourceController {
 
     @Autowired

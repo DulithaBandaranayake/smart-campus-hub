@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useState } from 'react';
 
-type Role = 'STUDENT' | 'ADMIN' | 'TECHNICIAN';
+type Role = 'STUDENT' | 'PARENT' | 'LECTURER' | 'ADMIN';
 
 export interface User {
   id: string;
   name: string;
   role: Role;
   email?: string;
+  studentId?: number;
+  parentId?: number;
+  lecturerId?: number;
 }
 
 interface UserContextType {
@@ -20,7 +23,12 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const stored = localStorage.getItem('hubUser');
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
 
   const login = (userData: User, token: string) => {
     setUser(userData);
@@ -36,12 +44,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <UserContext.Provider value={{ 
-      user, 
-      role: user?.role || null, 
-      login, 
+    <UserContext.Provider value={{
+      user,
+      role: user?.role || null,
+      login,
       logout,
-      isAuthenticated: !!user 
+      isAuthenticated: !!user && !!localStorage.getItem('hubToken')
     }}>
       {children}
     </UserContext.Provider>
@@ -50,8 +58,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useUser = () => {
   const context = useContext(UserContext);
-  if (context === undefined) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
+  if (!context) throw new Error('useUser must be used within a UserProvider');
   return context;
 };

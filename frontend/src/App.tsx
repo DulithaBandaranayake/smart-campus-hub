@@ -3,16 +3,22 @@ import { useUser } from './context/UserContext';
 import { ToastProvider } from './context/ToastContext';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/dashboard/Dashboard';
-import Facilities from './pages/facilities/Facilities';
-import Bookings from './pages/bookings/Bookings';
-import Incidents from './pages/incidents/Incidents';
-import Notifications from './pages/notifications/Notifications';
+import Students from './pages/users/Students';
+import Parents from './pages/users/Parents';
+import Lecturers from './pages/users/Lecturers';
 import Login from './pages/login/Login';
 import './App.css';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useUser();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { role, isAuthenticated } = useUser();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role !== 'ADMIN') return <Navigate to="/" replace />;
+  return <>{children}</>;
 };
 
 function App() {
@@ -21,20 +27,27 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          
+
           <Route path="/" element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }>
             <Route index element={<Dashboard />} />
-            <Route path="facilities" element={<Facilities />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="incidents" element={<Incidents />} />
-            <Route path="notifications" element={<Notifications />} />
+
+            {/* Admin + Lecturer */}
+            <Route path="students" element={<Students />} />
+
+            {/* Admin only */}
+            <Route path="parents" element={
+              <AdminRoute><Parents /></AdminRoute>
+            } />
+            <Route path="lecturers" element={
+              <AdminRoute><Lecturers /></AdminRoute>
+            } />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ToastProvider>
