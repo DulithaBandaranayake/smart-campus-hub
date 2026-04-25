@@ -7,6 +7,7 @@ import com.smartcampus.hub.model.Student;
 import com.smartcampus.hub.model.User;
 import com.smartcampus.hub.repository.LecturerRepository;
 import com.smartcampus.hub.repository.ParentRepository;
+import com.smartcampus.hub.repository.PasswordResetRepository;
 import com.smartcampus.hub.repository.StudentRepository;
 import com.smartcampus.hub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,9 @@ public class UserService {
 
     @Autowired
     private LecturerRepository lecturerRepository;
+
+    @Autowired
+    private PasswordResetRepository passwordResetRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -99,6 +106,61 @@ public class UserService {
         }
         
         userRepository.delete(user);
+    }
+
+    public List<UserDto> getPendingUsers() {
+        return userRepository.findAll().stream()
+                .filter(u -> !u.isApproved() && u.getRole() != null && !u.getRole().equals("ADMIN"))
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserDto approveUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setApproved(true);
+        user.setPasswordResetRequested(true);
+        user = userRepository.save(user);
+        return mapToDto(user);
+    }
+
+    public List<Map<String, Object>> getPasswordResetRequests() {
+        List<Map<String, Object>> results = new java.util.ArrayList<>();
+        List<com.smartcampus.hub.model.PasswordReset> pending = passwordResetRepository.findByApprovedFalseOrderByRequestedAtDesc();
+        
+        for (com.smartcampus.hub.model.PasswordReset pr : pending) {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", pr.getId());
+            map.put("userId", pr.getUser().getId());
+            map.put("userName", pr.getUser().getName());
+            map.put("userEmail", pr.getUser().getEmail());
+            map.put("requestedAt", pr.getRequestedAt());
+            results.add(map);
+        }
+        return results;
+    }
+
+    @Transactional
+    public Map<String, Object> approvePasswordReset(Long id) {
+        com.smartcampus.hub.model.PasswordReset reset = passwordResetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reset request not found"));
+        
+        reset.setApproved(true);
+        passwordResetRepository.save(reset);
+        
+        User user = reset.getUser();
+        user.setPasswordResetRequested(true);
+        userRepository.save(user);
+        
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("message", "Password reset approved");
+        response.put("token", reset.getToken());
+        return response;
+    }
+
+    @Transactional
+    public void rejectPasswordReset(Long id) {
+        passwordResetRepository.deleteById(id);
     }
 
     private void saveProfile(User user, UserDto dto) {

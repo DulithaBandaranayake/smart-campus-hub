@@ -16,18 +16,29 @@ public class Resource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String type; // e.g., LECTURE_HALL, LAB, EQUIPMENT
+    private String type;
 
     private Integer capacity;
     
     private String location;
 
-    @Column(nullable = false)
-    private String status; // ACTIVE, OUT_OF_SERVICE
+    private String status;
 
     private String description;
+
+    private String availabilityStart;
+
+    private String availabilityEnd;
+
+    @Column(columnDefinition = "TEXT")
+    private String equipmentDetails;
+    
+    @PrePersist
+    protected void onCreate() {
+        if (status == null || status.isEmpty()) {
+            status = "ACTIVE";
+        }
+    }
 }

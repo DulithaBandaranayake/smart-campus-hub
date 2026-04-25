@@ -8,6 +8,7 @@ import com.smartcampus.hub.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,11 +25,18 @@ public class BookingService {
 
     public BookingDTO createBooking(BookingDTO bookingDTO) {
         if (bookingDTO.getResourceId() == null) throw new IllegalArgumentException("Resource ID cannot be null");
+        if (bookingDTO.getStartTime().isAfter(bookingDTO.getEndTime())) {
+            throw new IllegalArgumentException("End time must be after start time");
+        }
+        
         Long resourceId = bookingDTO.getResourceId();
         Resource resource = resourceRepository.findById(java.util.Objects.requireNonNull(resourceId))
                 .orElseThrow(() -> new RuntimeException("Resource not found"));
 
-        // Simple conflict check
+        if (!"ACTIVE".equals(resource.getStatus())) {
+            throw new IllegalArgumentException("Resource is not available for booking");
+        }
+
         List<Booking> conflicts = bookingRepository.findByResourceAndStatusAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
                 resource, "APPROVED", bookingDTO.getEndTime(), bookingDTO.getStartTime());
 
@@ -42,13 +50,27 @@ public class BookingService {
         booking.setStartTime(bookingDTO.getStartTime());
         booking.setEndTime(bookingDTO.getEndTime());
         booking.setPurpose(bookingDTO.getPurpose());
+        booking.setExpectedAttendees(bookingDTO.getExpectedAttendees());
         booking.setStatus("PENDING");
         
         Booking saved = bookingRepository.save(booking);
+        
+        notificationService.createNotification(
+            "admin",
+            "New booking request for " + resource.getName(),
+            "BOOKING"
+        );
+        
         return mapToDTO(saved);
     }
 
-    public List<BookingDTO> getAllBookings() {
+    public List<BookingDTO> getAllBookings(String status) {
+        if (status != null && !status.isEmpty()) {
+            return bookingRepository.findAll().stream()
+                    .filter(b -> status.equals(b.getStatus()))
+                    .map(this::mapToDTO)
+                    .toList();
+        }
         return bookingRepository.findAll().stream()
                 .map(this::mapToDTO)
                 .toList();
@@ -70,14 +92,14 @@ public class BookingService {
             booking.setRejectionReason(rejectionReason);
         }
         
-        // Trigger Notification
+        Booking updated = bookingRepository.save(booking);
+        
         notificationService.createNotification(
             booking.getUserId(),
             "Your booking for " + booking.getResource().getName() + " has been " + status,
             "BOOKING"
         );
         
-        Booking updated = bookingRepository.save(booking);
         return mapToDTO(updated);
     }
 
@@ -96,7 +118,8 @@ public class BookingService {
                 booking.getEndTime(),
                 booking.getPurpose(),
                 booking.getStatus(),
-                booking.getRejectionReason()
+                booking.getRejectionReason(),
+                booking.getExpectedAttendees()
         );
     }
 }

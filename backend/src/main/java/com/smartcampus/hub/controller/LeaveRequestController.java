@@ -1,59 +1,78 @@
 package com.smartcampus.hub.controller;
 
-import com.smartcampus.hub.dto.LeaveRequestDto;
+import com.smartcampus.hub.dto.LeaveRequestDTO;
 import com.smartcampus.hub.service.LeaveRequestService;
+import com.smartcampus.hub.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/leaves")
+@RequestMapping("/api/leave-requests")
 public class LeaveRequestController {
 
-    @Autowired private LeaveRequestService leaveRequestService;
+    @Autowired
+    private LeaveRequestService leaveRequestService;
+
+    @Autowired
+    private SecurityUtils securityUtils;
 
     @GetMapping
-    public ResponseEntity<List<LeaveRequestDto>> getAll(
-            @RequestParam(required = false) Long studentId,
-            @RequestParam(required = false) Long parentId,
-            @RequestParam(required = false) String status) {
-        if (studentId != null) return ResponseEntity.ok(leaveRequestService.getByStudentId(studentId));
-        if (parentId != null) return ResponseEntity.ok(leaveRequestService.getByParentId(parentId));
-        if (status != null) return ResponseEntity.ok(leaveRequestService.getByStatus(status));
-        return ResponseEntity.ok(leaveRequestService.getAll());
+    public ResponseEntity<List<LeaveRequestDTO>> getAllLeaveRequests() {
+        String role = securityUtils.getCurrentUserRole();
+        Long userId = securityUtils.getCurrentUserId();
+        
+        // Filter based on user role
+        if ("STUDENT".equals(role)) {
+            // Students can only see their own leave requests
+            return ResponseEntity.ok(leaveRequestService.getByStudentUserId(userId));
+        } else if ("PARENT".equals(role)) {
+            // Parents can only see their children's leave requests
+            return ResponseEntity.ok(leaveRequestService.getByParentUserId(userId));
+        }
+        // Admin can see all
+        return ResponseEntity.ok(leaveRequestService.getAllLeaveRequests());
     }
 
-    @GetMapping("/pending-parent/{parentId}")
-    public ResponseEntity<List<LeaveRequestDto>> getPendingForParent(@PathVariable Long parentId) {
-        return ResponseEntity.ok(leaveRequestService.getPendingForParent(parentId));
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<LeaveRequestDTO>> getByStudentId(@PathVariable Long studentId) {
+        return ResponseEntity.ok(leaveRequestService.getLeaveRequestsByStudentId(studentId));
+    }
+
+    @GetMapping("/parent/{parentId}")
+    public ResponseEntity<List<LeaveRequestDTO>> getByParentId(@PathVariable Long parentId) {
+        return ResponseEntity.ok(leaveRequestService.getLeaveRequestsByParentId(parentId));
     }
 
     @PostMapping
-    public ResponseEntity<LeaveRequestDto> create(@RequestBody LeaveRequestDto dto) {
-        return ResponseEntity.ok(leaveRequestService.create(dto));
+    public ResponseEntity<LeaveRequestDTO> create(@RequestBody LeaveRequestDTO dto) {
+        return ResponseEntity.ok(leaveRequestService.createLeaveRequest(dto));
     }
 
-    @PutMapping("/{id}/parent-review")
-    public ResponseEntity<LeaveRequestDto> parentReview(
-            @PathVariable Long id,
-            @RequestParam boolean approved,
-            @RequestParam(required = false, defaultValue = "") String comment) {
-        return ResponseEntity.ok(leaveRequestService.parentReview(id, approved, comment));
+    @PostMapping("/{id}/parent-approve")
+    public ResponseEntity<LeaveRequestDTO> parentApprove(@PathVariable Long id, @RequestParam String comment) {
+        return ResponseEntity.ok(leaveRequestService.parentApprove(id, comment));
     }
 
-    @PutMapping("/{id}/admin-review")
-    public ResponseEntity<LeaveRequestDto> adminReview(
-            @PathVariable Long id,
-            @RequestParam boolean approved,
-            @RequestParam(required = false, defaultValue = "") String comment) {
-        return ResponseEntity.ok(leaveRequestService.adminReview(id, approved, comment));
+    @PostMapping("/{id}/parent-reject")
+    public ResponseEntity<LeaveRequestDTO> parentReject(@PathVariable Long id, @RequestParam String comment) {
+        return ResponseEntity.ok(leaveRequestService.parentReject(id, comment));
+    }
+
+    @PostMapping("/{id}/admin-approve")
+    public ResponseEntity<LeaveRequestDTO> adminApprove(@PathVariable Long id, @RequestParam String comment) {
+        return ResponseEntity.ok(leaveRequestService.adminApprove(id, comment));
+    }
+
+    @PostMapping("/{id}/admin-reject")
+    public ResponseEntity<LeaveRequestDTO> adminReject(@PathVariable Long id, @RequestParam String comment) {
+        return ResponseEntity.ok(leaveRequestService.adminReject(id, comment));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        leaveRequestService.delete(id);
-        return ResponseEntity.noContent().build();
+        leaveRequestService.deleteLeaveRequest(id);
+        return ResponseEntity.ok().build();
     }
 }

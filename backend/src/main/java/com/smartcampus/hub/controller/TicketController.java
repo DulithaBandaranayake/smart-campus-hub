@@ -5,6 +5,7 @@ import com.smartcampus.hub.dto.CommentDTO;
 import com.smartcampus.hub.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,18 +23,34 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TicketDTO>> getAllTickets() {
-        return ResponseEntity.ok(ticketService.getAllTickets());
+    public ResponseEntity<List<TicketDTO>> getAllTickets(@RequestParam(required = false) String status) {
+        return ResponseEntity.ok(ticketService.getAllTickets(status));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<TicketDTO>> getMyTickets(@RequestParam String reporterId) {
+        return ResponseEntity.ok(ticketService.getMyTickets(reporterId));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<TicketDTO> updateTicketStatus(@PathVariable Long id, @RequestParam String status) {
-        return ResponseEntity.ok(ticketService.updateTicketStatus(id, status));
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    public ResponseEntity<TicketDTO> updateTicketStatus(
+            @PathVariable Long id, 
+            @RequestParam String status,
+            @RequestParam(required = false) String resolutionNotes) {
+        return ResponseEntity.ok(ticketService.updateTicketStatus(id, status, resolutionNotes));
     }
 
     @PatchMapping("/{id}/assign")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<TicketDTO> assignTechnician(@PathVariable Long id, @RequestParam String technicianId) {
         return ResponseEntity.ok(ticketService.assignTechnician(id, technicianId));
+    }
+
+    @PatchMapping("/{id}/resolve")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    public ResponseEntity<TicketDTO> addResolutionNotes(@PathVariable Long id, @RequestParam String resolutionNotes) {
+        return ResponseEntity.ok(ticketService.addResolutionNotes(id, resolutionNotes));
     }
 
     @PostMapping("/{id}/comments")

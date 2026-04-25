@@ -28,6 +28,16 @@ public class ClassScheduleService {
         return classScheduleRepository.findBySubjectLecturerId(lecturerId).stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    public List<ClassScheduleDto> getByLecturerUserId(Long lecturerUserId) {
+        return classScheduleRepository.findAll().stream()
+                .filter(cs -> cs.getSubject() != null 
+                    && cs.getSubject().getLecturer() != null
+                    && cs.getSubject().getLecturer().getUser() != null
+                    && cs.getSubject().getLecturer().getUser().getId().equals(lecturerUserId))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     public ClassScheduleDto create(ClassScheduleDto dto) {
         Subject subject = subjectRepository.findById(dto.getSubjectId())
                 .orElseThrow(() -> new RuntimeException("Subject not found"));

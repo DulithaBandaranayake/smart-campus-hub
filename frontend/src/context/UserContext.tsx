@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-type Role = 'STUDENT' | 'PARENT' | 'LECTURER' | 'ADMIN';
+type Role = 'USER' | 'ADMIN' | 'TECHNICIAN';
 
 export interface User {
   id: string;
@@ -34,12 +34,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(userData);
     localStorage.setItem('hubUser', JSON.stringify(userData));
     localStorage.setItem('hubToken', token);
+    localStorage.setItem('hubUserRole', userData.role);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('hubUser');
     localStorage.removeItem('hubToken');
+    localStorage.removeItem('hubUserRole');
     window.location.href = '/login';
   };
 

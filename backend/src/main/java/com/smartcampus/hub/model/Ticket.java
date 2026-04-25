@@ -20,7 +20,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "resource_id", nullable = true)
-    private Resource resource; // Can be null if it's a general location incident
+    private Resource resource;
 
     @Column(nullable = false)
     private String subject;
@@ -30,7 +30,9 @@ public class Ticket {
     @Column(nullable = false)
     private String reporterId;
 
-    private String assigneeId; // Technician ID
+    private String assigneeId;
+
+    private String preferredContact;
 
     @Column(nullable = false)
     private String category;
@@ -39,15 +41,35 @@ public class Ticket {
     private String description;
 
     @Column(nullable = false)
-    private String priority; // LOW, MEDIUM, HIGH, CRITICAL
+    private String priority;
 
     @Column(nullable = false)
-    private String status; // OPEN, IN_PROGRESS, RESOLVED, CLOSED, REJECTED
+    private String status;
+
+    @Column(columnDefinition = "TEXT")
+    private String image1;
+
+    @Column(columnDefinition = "TEXT")
+    private String image2;
+
+    @Column(columnDefinition = "TEXT")
+    private String image3;
+
+    @Column(columnDefinition = "TEXT")
+    private String resolutionNotes;
 
     private LocalDateTime createdAt;
+    
+    private LocalDateTime updatedAt;
     
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

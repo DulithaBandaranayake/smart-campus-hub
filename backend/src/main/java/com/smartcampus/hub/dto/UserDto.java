@@ -2,6 +2,7 @@ package com.smartcampus.hub.dto;
 
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class UserDto {
@@ -10,20 +11,25 @@ public class UserDto {
     private String password;
     private String name;
     private String role;
+    private String googleId;
+    private String profilePicture;
+    private String preferredContact;
+    private boolean enabled;
+    private LocalDateTime createdAt;
     
     // Student fields
     private String grade;
     private LocalDate enrollmentDate;
-    private Long studentId; // Student entity ID
+    private Long studentId;
     
     // Parent fields
-    private Long parentId;  // Parent entity ID
+    private Long parentId;
     private String phoneNumber;
     private String address;
-    private java.util.List<Long> studentIds; // IDs of children students
+    private java.util.List<Long> studentIds;
     
     // Lecturer fields
-    private Long lecturerId; // Lecturer entity ID
+    private Long lecturerId;
     private String department;
     private String employeeId;
 }

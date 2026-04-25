@@ -6,7 +6,7 @@
 
 .main-content {
   flex: 1;
-  margin-left: 280px; /* Sidebar width */
+  margin-left: 280px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -21,22 +21,29 @@
   overflow-y: auto;
 }
 
+.page-transition {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 @media (max-width: 1024px) {
   .main-content {
     margin-left: 80px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    padding-top: 60px; /* Space for mobile header if added */
+    padding: 1rem;
+    padding-top: 70px;
   }
-}
-
-/* Page Transition Wrapper */
-.page-transition {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
+  .content-wrapper {
+    padding: 1rem;
+    padding-top: 70px;
+  }
+  .page-transition {
+    max-width: 100%;
+  }
 }

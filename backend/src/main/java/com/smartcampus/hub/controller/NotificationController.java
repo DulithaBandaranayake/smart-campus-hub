@@ -16,8 +16,11 @@ public class NotificationController {
     private NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getMyNotifications(@RequestParam String userId) {
-        return ResponseEntity.ok(notificationService.getMyNotifications(userId));
+    public ResponseEntity<List<NotificationDTO>> getMyNotifications(@RequestParam(required = false) String userId) {
+        if (userId != null && !userId.isEmpty()) {
+            return ResponseEntity.ok(notificationService.getMyNotifications(userId));
+        }
+        return ResponseEntity.ok(notificationService.getPublicNotices(null, null));
     }
 
     @GetMapping("/public")
@@ -29,9 +32,19 @@ public class NotificationController {
 
     @PostMapping
     public ResponseEntity<NotificationDTO> createNotice(@RequestBody NotificationDTO dto) {
-        // In a real app, we'd use @PreAuthorize("hasRole('ADMIN')")
         return ResponseEntity.ok(notificationService.createGlobalNotification(
                 dto.getTitle(), dto.getMessage(), dto.getPriority()));
+    }
+
+    @PatchMapping("/read-all")
+    public ResponseEntity<Void> markAllAsRead(@RequestParam String userId) {
+        List<NotificationDTO> notifications = notificationService.getMyNotifications(userId);
+        for (NotificationDTO dto : notifications) {
+            if (!dto.isRead()) {
+                notificationService.markAsRead(dto.getId());
+            }
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")

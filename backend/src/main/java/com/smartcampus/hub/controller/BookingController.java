@@ -4,6 +4,7 @@ import com.smartcampus.hub.dto.BookingDTO;
 import com.smartcampus.hub.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +22,9 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookingDTO>> getAllBookings() {
-        return ResponseEntity.ok(bookingService.getAllBookings());
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    public ResponseEntity<List<BookingDTO>> getAllBookings(@RequestParam(required = false) String status) {
+        return ResponseEntity.ok(bookingService.getAllBookings(status));
     }
 
     @GetMapping("/my")
@@ -31,6 +33,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookingDTO> updateBookingStatus(
             @PathVariable Long id, 
             @RequestParam String status, 

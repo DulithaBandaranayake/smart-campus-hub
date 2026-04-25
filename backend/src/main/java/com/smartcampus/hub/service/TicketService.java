@@ -1,30 +1,41 @@
 package com.smartcampus.hub.service;
 
+import com.smartcampus.hub.dto.CommentDTO;
+import com.smartcampus.hub.dto.TicketDTO;
 import com.smartcampus.hub.model.Comment;
 import com.smartcampus.hub.model.Ticket;
 import com.smartcampus.hub.repository.CommentRepository;
 import com.smartcampus.hub.repository.TicketRepository;
+import com.smartcampus.hub.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class TicketService {
 
     @Autowired
-    private com.smartcampus.hub.repository.TicketRepository ticketRepository;
+    private TicketRepository ticketRepository;
 
     @Autowired
-    private com.smartcampus.hub.repository.CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     @Autowired
-    private com.smartcampus.hub.repository.ResourceRepository resourceRepository;
+    private ResourceRepository resourceRepository;
 
     @Autowired
     private NotificationService notificationService;
 
-    public com.smartcampus.hub.dto.TicketDTO createTicket(com.smartcampus.hub.dto.TicketDTO ticketDTO) {
+    public TicketDTO createTicket(TicketDTO ticketDTO) {
+        if (ticketDTO.getSubject() == null || ticketDTO.getSubject().isBlank()) {
+            throw new IllegalArgumentException("Subject is required");
+        }
+        if (ticketDTO.getCategory() == null || ticketDTO.getCategory().isBlank()) {
+            throw new IllegalArgumentException("Category is required");
+        }
+        
         Ticket ticket = new Ticket();
         
         if (ticketDTO.getResourceId() != null) {
@@ -37,24 +48,53 @@ public class TicketService {
         ticket.setLocation(ticketDTO.getLocation());
         ticket.setPriority(ticketDTO.getPriority() != null ? ticketDTO.getPriority() : "MEDIUM");
         ticket.setCategory(ticketDTO.getCategory());
+        ticket.setPreferredContact(ticketDTO.getPreferredContact());
+        ticket.setImage1(ticketDTO.getImage1());
+        ticket.setImage2(ticketDTO.getImage2());
+        ticket.setImage3(ticketDTO.getImage3());
         ticket.setStatus("OPEN");
-        ticket.setCreatedAt(java.time.LocalDateTime.now());
         
         Ticket saved = ticketRepository.save(ticket);
+        
+        notificationService.createNotification(
+            "admin",
+            "New ticket created: " + ticket.getSubject(),
+            "TICKET"
+        );
+        
         return mapToTicketDTO(saved);
     }
 
-    public List<com.smartcampus.hub.dto.TicketDTO> getAllTickets() {
+    public List<TicketDTO> getAllTickets(String status) {
+        if (status != null && !status.isEmpty()) {
+            return ticketRepository.findAll().stream()
+                    .filter(t -> status.equals(t.getStatus()))
+                    .map(this::mapToTicketDTO)
+                    .toList();
+        }
         return ticketRepository.findAll().stream()
                 .map(this::mapToTicketDTO)
                 .toList();
     }
 
-    public com.smartcampus.hub.dto.TicketDTO updateTicketStatus(Long id, String status) {
+    public List<TicketDTO> getMyTickets(String reporterId) {
+        return ticketRepository.findAll().stream()
+                .filter(t -> reporterId.equals(t.getReporterId()))
+                .map(this::mapToTicketDTO)
+                .toList();
+    }
+
+    public TicketDTO updateTicketStatus(Long id, String status, String resolutionNotes) {
         if (id == null) throw new IllegalArgumentException("ID cannot be null");
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        
         ticket.setStatus(status);
+        if (resolutionNotes != null && !resolutionNotes.isBlank()) {
+            ticket.setResolutionNotes(resolutionNotes);
+        }
+        
+        Ticket updated = ticketRepository.save(ticket);
         
         notificationService.createNotification(
             ticket.getReporterId(),
@@ -62,45 +102,61 @@ public class TicketService {
             "TICKET"
         );
         
-        Ticket updated = ticketRepository.save(ticket);
         return mapToTicketDTO(updated);
     }
 
-    public com.smartcampus.hub.dto.TicketDTO assignTechnician(Long id, String technicianId) {
+    public TicketDTO assignTechnician(Long id, String technicianId) {
         if (id == null) throw new IllegalArgumentException("ID cannot be null");
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
         ticket.setAssigneeId(technicianId);
         ticket.setStatus("IN_PROGRESS");
+        
         Ticket updated = ticketRepository.save(ticket);
+        
+        notificationService.createNotification(
+            technicianId,
+            "You have been assigned to ticket #" + ticket.getId(),
+            "TICKET"
+        );
+        
         return mapToTicketDTO(updated);
     }
 
-    public com.smartcampus.hub.dto.CommentDTO addComment(Long ticketId, com.smartcampus.hub.dto.CommentDTO commentDTO) {
-        if (ticketId == null) throw new IllegalArgumentException("Ticket ID cannot be null");
+    public TicketDTO addResolutionNotes(Long id, String resolutionNotes) {
+        if (id == null) throw new IllegalArgumentException("ID cannot be null");
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        ticket.setResolutionNotes(resolutionNotes);
+        ticket.setStatus("RESOLVED");
+        
+        Ticket updated = ticketRepository.save(ticket);
+        
+        notificationService.createNotification(
+            ticket.getReporterId(),
+            "Your ticket #" + ticket.getId() + " has been resolved",
+            "TICKET"
+        );
+        
+        return mapToTicketDTO(updated);
+    }
+
+    public CommentDTO addComment(Long ticketId, CommentDTO commentDTO) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
         
         Comment comment = new Comment();
         comment.setTicket(ticket);
-        comment.setAuthorId(commentDTO.getAuthorId());
-        comment.setContent(commentDTO.getContent());
-        comment.setCreatedAt(java.time.LocalDateTime.now());
+        comment.setAuthorId(commentDTO.getAuthorId() != null ? commentDTO.getAuthorId() : "SYSTEM");
+        comment.setContent(commentDTO.getContent() != null ? commentDTO.getContent() : "No content");
+        comment.setCreatedAt(LocalDateTime.now());
                 
-        // Notify reporter if someone else comments
-        if (!comment.getAuthorId().equals(ticket.getReporterId())) {
-            notificationService.createNotification(
-                ticket.getReporterId(),
-                "New comment on your ticket #" + ticket.getId(),
-                "COMMENT"
-            );
-        }
-        
         Comment saved = commentRepository.save(comment);
+        
         return mapToCommentDTO(saved);
     }
 
-    public List<com.smartcampus.hub.dto.CommentDTO> getComments(Long ticketId) {
+    public List<CommentDTO> getComments(Long ticketId) {
         if (ticketId == null) return List.of();
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
@@ -109,28 +165,35 @@ public class TicketService {
                 .toList();
     }
 
-    private com.smartcampus.hub.dto.TicketDTO mapToTicketDTO(Ticket ticket) {
-        return new com.smartcampus.hub.dto.TicketDTO(
+    private TicketDTO mapToTicketDTO(Ticket ticket) {
+        return new TicketDTO(
                 ticket.getId(),
                 ticket.getResource() != null ? ticket.getResource().getId() : null,
                 ticket.getResource() != null ? ticket.getResource().getName() : null,
                 ticket.getLocation(),
                 ticket.getReporterId(),
                 ticket.getAssigneeId(),
+                ticket.getPreferredContact(),
                 ticket.getSubject(),
                 ticket.getDescription(),
                 ticket.getStatus(),
                 ticket.getPriority(),
                 ticket.getCategory(),
-                ticket.getCreatedAt()
+                ticket.getImage1(),
+                ticket.getImage2(),
+                ticket.getImage3(),
+                ticket.getResolutionNotes(),
+                ticket.getCreatedAt(),
+                ticket.getUpdatedAt()
         );
     }
 
-    private com.smartcampus.hub.dto.CommentDTO mapToCommentDTO(Comment comment) {
-        return new com.smartcampus.hub.dto.CommentDTO(
+    private CommentDTO mapToCommentDTO(Comment comment) {
+        return new CommentDTO(
                 comment.getId(),
                 comment.getTicket().getId(),
                 comment.getAuthorId(),
+                null,
                 comment.getContent(),
                 comment.getCreatedAt()
         );

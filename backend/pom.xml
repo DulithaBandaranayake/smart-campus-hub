@@ -15,10 +15,10 @@
 	<description>Smart Campus Operations Hub REST API</description>
 	
 	<properties>
-		<java.version>21</java.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
-		<maven.compiler.release>21</maven.compiler.release>
+		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
 	</properties>
 	
 	<dependencies>
@@ -140,7 +140,7 @@
 						<configuration>
 							<rules>
 								<requireJavaVersion>
-									<version>[17,18)</version>
+									<version>[17,26)</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>

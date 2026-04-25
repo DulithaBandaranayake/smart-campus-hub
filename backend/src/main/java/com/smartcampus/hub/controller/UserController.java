@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -41,6 +42,38 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<UserDto>> getPendingUsers() {
+        return ResponseEntity.ok(userService.getPendingUsers());
+    }
+
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<UserDto> approveUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.approveUser(id));
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<Void> rejectUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/password-reset-requests")
+    public ResponseEntity<List<Map<String, Object>>> getPasswordResetRequests() {
+        return ResponseEntity.ok(userService.getPasswordResetRequests());
+    }
+
+    @PostMapping("/password-reset/{id}/approve")
+    public ResponseEntity<Map<String, Object>> approvePasswordReset(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.approvePasswordReset(id));
+    }
+
+    @PostMapping("/password-reset/{id}/reject")
+    public ResponseEntity<Void> rejectPasswordReset(@PathVariable Long id) {
+        userService.rejectPasswordReset(id);
         return ResponseEntity.noContent().build();
     }
 }

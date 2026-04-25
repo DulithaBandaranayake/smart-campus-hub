@@ -23,6 +23,8 @@ public class TicketDTO {
     
     private String assigneeId;
     
+    private String preferredContact;
+    
     @NotBlank(message = "Subject is required")
     private String subject;
     
@@ -35,5 +37,12 @@ public class TicketDTO {
     @NotBlank(message = "Category is required")
     private String category;
     
+    private String image1;
+    private String image2;
+    private String image3;
+    
+    private String resolutionNotes;
+    
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

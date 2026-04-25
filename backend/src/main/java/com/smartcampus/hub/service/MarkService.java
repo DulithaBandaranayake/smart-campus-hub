@@ -32,6 +32,34 @@ public class MarkService {
         return markRepository.findBySubjectId(subjectId).stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    public List<MarkDto> getByUserId(Long userId) {
+        return markRepository.findAll().stream()
+                .filter(m -> m.getStudent() != null && m.getStudent().getUser() != null
+                    && m.getStudent().getUser().getId().equals(userId))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<MarkDto> getByParentUserId(Long parentUserId) {
+        return markRepository.findAll().stream()
+                .filter(m -> m.getStudent() != null 
+                    && m.getStudent().getParent() != null
+                    && m.getStudent().getParent().getUser() != null
+                    && m.getStudent().getParent().getUser().getId().equals(parentUserId))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<MarkDto> getByLecturerUserId(Long lecturerUserId) {
+        return markRepository.findAll().stream()
+                .filter(m -> m.getSubject() != null 
+                    && m.getSubject().getLecturer() != null
+                    && m.getSubject().getLecturer().getUser() != null
+                    && m.getSubject().getLecturer().getUser().getId().equals(lecturerUserId))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     public MarkDto create(MarkDto dto) {
         Mark m = new Mark();
         Student student = studentRepository.findById(dto.getStudentId())
@@ -61,6 +89,26 @@ public class MarkService {
 
     public void delete(Long id) {
         markRepository.deleteById(id);
+    }
+
+    // Check if lecturer can modify marks for a subject (by subjectId - for create)
+    public boolean canLecturerModifyMarkBySubjectId(Long lecturerUserId, Long subjectId) {
+        return markRepository.findAll().stream()
+                .anyMatch(m -> m.getSubject() != null 
+                    && m.getSubject().getId().equals(subjectId)
+                    && m.getSubject().getLecturer() != null
+                    && m.getSubject().getLecturer().getUser() != null
+                    && m.getSubject().getLecturer().getUser().getId().equals(lecturerUserId));
+    }
+
+    // Check if lecturer can modify a specific mark (by markId - for update/delete)
+    public boolean canLecturerModifyMarkByMarkId(Long lecturerUserId, Long markId) {
+        return markRepository.findById(markId)
+                .map(m -> m.getSubject() != null 
+                    && m.getSubject().getLecturer() != null
+                    && m.getSubject().getLecturer().getUser() != null
+                    && m.getSubject().getLecturer().getUser().getId().equals(lecturerUserId))
+                .orElse(false);
     }
 
     private MarkDto toDto(Mark m) {

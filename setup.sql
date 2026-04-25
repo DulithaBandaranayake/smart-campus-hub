@@ -1,12 +1,19 @@
--- Create Database for Smart Campus Hub
-CREATE DATABASE IF NOT EXISTS paf_lms;
+-- Add missing columns to users table for Smart Campus Hub
+-- Run this script in your MySQL database
 
--- Use the database
 USE paf_lms;
 
--- Note: Spring Boot JPA will automatically create the tables if configured with:
--- spring.jpa.hibernate.ddl-auto=update
+-- Add approved column if it doesn't exist
+ALTER TABLE users ADD COLUMN approved BOOLEAN DEFAULT FALSE;
 
--- The initial admin user is created automatically by AdminDatabaseSeeder.java:
--- Email: admin@nexus.com
--- Password: admin123
+-- Add password_reset_requested column if it doesn't exist
+ALTER TABLE users ADD COLUMN password_reset_requested BOOLEAN DEFAULT FALSE;
+
+-- Add password_reset_token column if it doesn't exist
+ALTER TABLE users ADD COLUMN password_reset_token VARCHAR(255);
+
+-- Add password_reset_expires column if it doesn't exist
+ALTER TABLE users ADD COLUMN password_reset_expires DATETIME;
+
+-- Verify the changes
+DESCRIBE users;

@@ -1,0 +1,124 @@
+.leave-requests-page {
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-size: 1.75rem;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.leave-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leave-request-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.lr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.lr-student strong {
+  display: block;
+  font-size: 1.1rem;
+}
+
+.lr-student .grade {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.lr-dates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.lr-reason, .lr-comment {
+  margin-bottom: 8px;
+  color: var(--text-dim);
+}
+
+.lr-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #D97706;
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #DC2626;
+}
+
+.badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #2563EB;
+}
+
+.loading, .no-data {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-muted);
+}
+
+.error-message {
+  padding: 14px 18px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .leave-requests-page {
+    padding: 16px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}

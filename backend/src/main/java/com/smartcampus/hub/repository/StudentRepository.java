@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface StudentRepository extends JpaRepository<Student, Long> {
     java.util.Optional<Student> findByUserId(Long userId);
     java.util.List<Student> findByParentId(Long parentId);
+    java.util.Optional<Student> findByUserEmail(String email);
 }

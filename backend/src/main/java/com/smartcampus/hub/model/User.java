@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -18,12 +20,35 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    private String role; // STUDENT, PARENT, LECTURER, ADMIN
+    private String role;
+
+    private String googleId;
+
+    private String profilePicture;
+
+    private String preferredContact;
+
+    private boolean enabled = true;
+
+    private boolean approved = false;
+
+    private boolean passwordResetRequested = false;
+
+    private String passwordResetToken;
+
+    private LocalDateTime passwordResetExpires;
+
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

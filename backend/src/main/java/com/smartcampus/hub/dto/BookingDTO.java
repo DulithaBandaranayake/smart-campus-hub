@@ -31,4 +31,5 @@ public class BookingDTO {
     
     private String status;
     private String rejectionReason;
+    private Integer expectedAttendees;
 }

@@ -17,6 +17,9 @@ public class ResourceService {
 
     public ResourceDTO createResource(ResourceDTO resourceDTO) {
         Resource resource = new Resource();
+        if (resourceDTO.getStatus() == null || resourceDTO.getStatus().isEmpty()) {
+            resource.setStatus("ACTIVE");
+        }
         mapDtoToEntity(resourceDTO, resource);
         Resource saved = resourceRepository.save(resource);
         return mapEntityToDto(saved);
@@ -67,11 +70,11 @@ public class ResourceService {
     }
 
     private void mapDtoToEntity(ResourceDTO dto, Resource entity) {
-        entity.setName(dto.getName());
-        entity.setType(dto.getType());
-        entity.setCapacity(dto.getCapacity());
-        entity.setLocation(dto.getLocation());
-        entity.setStatus(dto.getStatus());
-        entity.setDescription(dto.getDescription());
+        if (dto.getName() != null) entity.setName(dto.getName());
+        if (dto.getType() != null) entity.setType(dto.getType());
+        if (dto.getCapacity() != null) entity.setCapacity(dto.getCapacity());
+        if (dto.getLocation() != null) entity.setLocation(dto.getLocation());
+        if (dto.getStatus() != null) entity.setStatus(dto.getStatus());
+        if (dto.getDescription() != null) entity.setDescription(dto.getDescription());
     }
 }

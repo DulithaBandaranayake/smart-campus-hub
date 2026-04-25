@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "frontend": "cd frontend && npm run dev",
-    "backend": "cd backend && .\\mvnw.cmd spring-boot:run",
+    "backend": "cd backend && ./mvnw spring-boot:run",
     "install:all": "npm install && cd frontend && npm install --legacy-peer-deps",
-    "clean": "powershell ./clean-project.ps1",
+    "clean": "npm run clean:backend && npm run clean:frontend",
+    "clean:backend": "cd backend && rm -rf data target *.log",
+    "clean:frontend": "cd frontend && rm -rf dist node_modules",
     "setup:db": "echo 'Please ensure MySQL is running and run: mysql -u root -p < setup.sql'"
   },
   "devDependencies": {

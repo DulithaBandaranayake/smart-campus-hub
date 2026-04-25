@@ -23,7 +23,7 @@ public class Booking {
     private Resource resource;
 
     @Column(nullable = false)
-    private String userId; // The user who made the booking
+    private String userId;
 
     @Column(nullable = false)
     private LocalDateTime startTime;
@@ -32,11 +32,25 @@ public class Booking {
     private LocalDateTime endTime;
 
     @Column(nullable = false)
-    private String status; // PENDING, APPROVED, REJECTED, CANCELLED
+    private String status;
 
     private String purpose;
     
     private String rejectionReason;
 
     private Integer expectedAttendees;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

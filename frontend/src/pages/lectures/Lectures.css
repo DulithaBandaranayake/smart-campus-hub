@@ -1,0 +1,143 @@
+.lectures-page { padding: 24px; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.page-header h1 { font-size: 1.75rem; margin: 0; }
+
+.filter-bar { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.filter-bar label { font-weight: 600; font-size: 0.9rem; }
+.filter-bar select { 
+  padding: 8px 12px; 
+  border: 1px solid var(--border); 
+  border-radius: 6px; 
+  font-size: 0.9rem;
+  background: var(--bg-main);
+}
+
+.schedules-container { margin-top: 16px; }
+.schedules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.schedule-card { 
+  background: var(--bg-card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.schedule-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+.schedule-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.subject-info h3 { margin: 0 0 4px; font-size: 1.1rem; }
+.subject-code { font-size: 0.85rem; color: var(--primary); font-weight: 600; }
+
+.schedule-details { display: flex; flex-direction: column; gap: 10px; }
+.detail-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  color: var(--text-dim); 
+  font-size: 0.9rem; 
+}
+.detail-item svg { color: var(--primary); flex-shrink: 0; }
+
+.grade-badge, .semester-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.grade-badge { background: rgba(59,130,246,0.1); color: #3B82F6; }
+.semester-badge { background: rgba(16,185,129,0.1); color: #10B981; }
+
+.schedule-actions { display: flex; gap: 8px; }
+.btn-sm { padding: 6px 10px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; border: none; }
+.btn-danger { 
+  background: rgba(239,68,68,0.1); 
+  color: #DC2626; 
+  border: 1px solid rgba(239,68,68,0.2); 
+}
+.btn-danger:hover { background: #DC2626; color: white; }
+
+.error-message { 
+  padding: 14px; 
+  background: rgba(239,68,68,0.1); 
+  color: #DC2626; 
+  border-radius: 8px; 
+  margin-bottom: 16px; 
+}
+.loading, .no-data { text-align: center; padding: 60px; color: var(--text-muted); }
+
+.modal-overlay { 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(0,0,0,0.6); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 1000; 
+}
+.modal { 
+  background: var(--bg-card); 
+  border-radius: var(--radius-xl); 
+  padding: 28px; 
+  width: 90%; 
+  max-width: 500px; 
+  max-height: 90vh; 
+  overflow-y: auto; 
+}
+.modal h2 { margin: 0 0 20px; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; }
+.form-group input, 
+.form-group select { 
+  width: 100%; 
+  padding: 10px 12px; 
+  border: 1px solid var(--border); 
+  border-radius: 8px; 
+  font-size: 0.95rem; 
+  background: var(--bg-main);
+}
+.form-group input:focus, 
+.form-group select:focus { outline: none; border-color: var(--primary); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.modal-actions { 
+  display: flex; 
+  gap: 12px; 
+  justify-content: flex-end; 
+  margin-top: 24px; 
+  padding-top: 20px; 
+  border-top: 1px solid var(--border); 
+}
+.btn-primary { 
+  background: linear-gradient(135deg, var(--primary), var(--accent)); 
+  color: white; 
+  padding: 10px 20px; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-weight: 600; 
+}
+.btn-secondary { 
+  background: var(--bg-main); 
+  color: var(--text-main); 
+  padding: 10px 20px; 
+  border: 1px solid var(--border); 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-weight: 600; 
+}
+
+@media (max-width: 768px) { 
+  .lectures-page { padding: 16px; }
+  .form-row { grid-template-columns: 1fr; }
+}
